@@ -12,11 +12,16 @@ class ToDoListViewController: UITableViewController {
 
     
     var itemArray = ["1st item", "2nd item", "3rd item" ]
+    let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+        /*Setting the itemArray with the data stored in SQLite*/
+        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+            itemArray = items
+        }
         
     }
     
@@ -69,6 +74,8 @@ class ToDoListViewController: UITableViewController {
         /*what happens when add item button is clicked*/
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             self.itemArray.append(textField.text!) /*exclamation mark to force unwrap it. Even when it's an empty textField, it will be an empty cell. Self needs to be in a closure*/
+            
+            self.defaults.set(self.itemArray, forKey: "TodoListArray") /*Lesson 225*/
             
             /*Reload the data with the data saved in the array*/
             self.tableView.reloadData()

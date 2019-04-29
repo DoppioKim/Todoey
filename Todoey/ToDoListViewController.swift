@@ -11,7 +11,7 @@ import UIKit
 class ToDoListViewController: UITableViewController {
 
     
-    let itemArray = ["1st item", "2nd item", "3rd item" ]
+    var itemArray = ["1st item", "2nd item", "3rd item" ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,5 +55,36 @@ class ToDoListViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
+    
+    
+    //MARK - Add New Items
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        /*A scope of the entire IBAction Pressed, which can be accssible inside of any below*/
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Add New Item", message: "", preferredStyle: .alert)
+        
+        /*what happens when add item button is clicked*/
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            self.itemArray.append(textField.text!) /*exclamation mark to force unwrap it. Even when it's an empty textField, it will be an empty cell. Self needs to be in a closure*/
+            
+            /*Reload the data with the data saved in the array*/
+            self.tableView.reloadData()
+        }
+        
+        alert.addTextField { (textFieldInAlert) in
+            textFieldInAlert.placeholder = "Enter New Item"
+            textField = textFieldInAlert
+        }
+        
+        alert.addAction(action)
+        
+        present(alert, animated: true, completion: nil)
+        
+    }
+    
+    
 }
 

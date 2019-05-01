@@ -11,15 +11,23 @@ import UIKit
 class ToDoListViewController: UITableViewController {
 
     
-    var itemArray = ["1st item", "2nd item", "3rd item" ]
+    var itemArray = [Items]() /*In an array because it has two objects*/
     let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+        let newItem = Items()
+        newItem.title = "1st todo item"
+        itemArray.append(newItem)
+        
+        let newItem2 = Items()
+        newItem2.title = "2nd todo item"
+        itemArray.append(newItem2)
+        
         /*Setting the itemArray with the data stored in SQLite*/
-        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+        if let items = defaults.array(forKey: "TodoListArray") as? [Items] {
             itemArray = items
         }
         
@@ -32,9 +40,22 @@ class ToDoListViewController: UITableViewController {
         /*Making the cells of tableview reusable cells*/
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
         
-        /*setting the text of 'textLabel' of a cell to the items in the itemArray*/
-        cell.textLabel?.text = itemArray[indexPath.row]
+        /*setting the text of 'textLabel' of a cell in the key 'title' in the itemArray*/
+        cell.textLabel?.text = itemArray[indexPath.row].title
         
+        
+        /*ternary Operator*/
+        let item = itemArray[indexPath.row]
+        cell.accessoryType = item.done ? .checkmark : .none
+        
+//        if itemArray[indexPath.row].done != true {
+//            cell.accessoryType = .none
+//        } else {
+//            cell.accessoryType = .checkmark
+//
+//        }
+        
+        tableView.reloadData() /*To trigger the tableView didSelectRowAt everytime there is an action going and reloads the checkmark symbol*/
         return cell
         
     }
@@ -48,12 +69,7 @@ class ToDoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //print(itemArray[indexPath.row])
         
-        /*Giving checkmark when it's clicked*/
-        if tableView.cellForRow(at: indexPath)?.accessoryType != .checkmark {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        }
+        itemArray[indexPath.row].done = !itemArray[indexPath.row].done //setting the done property opposite to the current one
         
         /*Animating when it's deselected. So it doesn't stay grey even after pressed*/
         /*indexPath below is not capitalised because it's a parameter set in the function*/
@@ -73,7 +89,11 @@ class ToDoListViewController: UITableViewController {
         
         /*what happens when add item button is clicked*/
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
-            self.itemArray.append(textField.text!) /*exclamation mark to force unwrap it. Even when it's an empty textField, it will be an empty cell. Self needs to be in a closure*/
+            
+            let newItem = Items() /*newItem is local object*/
+            newItem.title = textField.text!
+            
+            self.itemArray.append(newItem)
             
             self.defaults.set(self.itemArray, forKey: "TodoListArray") /*Lesson 225*/
             
